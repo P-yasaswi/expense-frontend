@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../api';
 import { useNavigate } from 'react-router-dom';
-import './Dashboard.css'; // Import CSS for animations & styling
+import './Dashboard.css';
 
 const Dashboard = () => {
   const [expenses, setExpenses] = useState([]);
@@ -12,10 +12,10 @@ const Dashboard = () => {
 
   const fetchExpenses = async () => {
     try {
-      const res = await axios.get('/expenses');
+      const res = await axios.get('/api/expenses');
       setExpenses(res.data);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching expenses:', err);
     }
   };
 
@@ -27,34 +27,34 @@ const Dashboard = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.delete(`/expenses/${editingId}`); // Delete old
+        await axios.delete(`/api/expenses/${editingId}`);
       }
-      await axios.post('/expenses', form);
+      await axios.post('/api/expenses', form);
       setForm({ title: '', amount: '', category: '', date: '' });
       setEditingId(null);
-      setFormVisible(false); // Close form after submit
+      setFormVisible(false);
       fetchExpenses();
     } catch (err) {
-      console.error(err);
+      console.error('Error submitting expense:', err);
     }
   };
 
   const handleEdit = (expense) => {
     setForm(expense);
     setEditingId(expense.id);
-    setFormVisible(true); // Show form on edit
+    setFormVisible(true);
   };
 
   const handleDelete = async (id) => {
     try {
       const item = document.getElementById(`expense-${id}`);
-      item.classList.add('fade-out'); // Animation before deletion
+      item.classList.add('fade-out');
       setTimeout(async () => {
-        await axios.delete(`/expenses/${id}`);
+        await axios.delete(`/api/expenses/${id}`);
         fetchExpenses();
       }, 300);
     } catch (err) {
-      console.error(err);
+      console.error('Error deleting expense:', err);
     }
   };
 
@@ -119,3 +119,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
