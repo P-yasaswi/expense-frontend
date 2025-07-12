@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../api';
 import { Pie, Bar } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import {
+  Chart,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement
+} from 'chart.js';
 
 Chart.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -11,20 +19,22 @@ const ChartPage = () => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const res = await axios.get('/expenses');
+        const res = await axios.get('/api/expenses'); // ✅ Fixed path
         setExpenses(res.data);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching expenses for chart:', err);
       }
     };
     fetchExpenses();
   }, []);
 
+  // Totals by category (Pie)
   const categoryTotals = expenses.reduce((acc, curr) => {
     acc[curr.category] = (acc[curr.category] || 0) + Number(curr.amount);
     return acc;
   }, {});
 
+  // Totals by date (Bar)
   const datesTotals = expenses.reduce((acc, curr) => {
     acc[curr.date] = (acc[curr.date] || 0) + Number(curr.amount);
     return acc;
@@ -32,8 +42,10 @@ const ChartPage = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>Expense Charts</h2>
+      <h2 style={{ textAlign: 'center' }}>Expense Charts</h2>
+
       <div style={{ width: '400px', margin: '2rem auto' }}>
+        <h3 style={{ textAlign: 'center' }}>By Category</h3>
         <Pie
           data={{
             labels: Object.keys(categoryTotals),
@@ -46,7 +58,9 @@ const ChartPage = () => {
           }}
         />
       </div>
+
       <div style={{ width: '600px', margin: '2rem auto' }}>
+        <h3 style={{ textAlign: 'center' }}>By Date</h3>
         <Bar
           data={{
             labels: Object.keys(datesTotals),
